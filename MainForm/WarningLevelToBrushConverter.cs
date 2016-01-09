@@ -10,27 +10,47 @@ namespace MainForm
 {
     public class WarningLevelToBrushConverter: IValueConverter
     {
-        private readonly Color _startColor = Colors.White;
+        #region Fields
         private const double ANGLE = 90.002;
+        private static readonly Color _startColor = Colors.White;
+        #endregion
+
+
+        #region  Properties & Indexers
+        public Brush ApproachingBrush { get; set; } = new LinearGradientBrush(_startColor, Color.FromRgb(255, 242, 148),
+            ANGLE);
+
+        public Brush InProgressBrush { get; set; } = new LinearGradientBrush(_startColor, Color.FromRgb(204, 148, 255),
+            ANGLE);
+
+        public Brush NoneBrush { get; set; } = new LinearGradientBrush(_startColor, Color.FromRgb(184, 184, 184), ANGLE);
+
+        public Brush NormalBrush { get; set; } = new LinearGradientBrush(_startColor, Color.FromRgb(149, 255, 160),
+            ANGLE);
+
+        public Brush OverdueBrush { get; set; } = new LinearGradientBrush(_startColor, Color.FromRgb(255, 147, 147),
+            ANGLE);
+        #endregion
 
 
         #region Methods
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is WarningLevel)) return DependencyProperty.UnsetValue;
+
             var warningLevel = (WarningLevel)value;
             switch (warningLevel)
             {
                 case WarningLevel.Overdue:
-                    return new LinearGradientBrush(_startColor, Color.FromRgb(255, 147, 147), ANGLE);
+                    return OverdueBrush;
                 case WarningLevel.InProgress:
-                    return new LinearGradientBrush(_startColor, Color.FromRgb(204, 148, 255), ANGLE);
+                    return InProgressBrush;
                 case WarningLevel.Approaching:
-                    return new LinearGradientBrush(_startColor, Color.FromRgb(255, 242, 148), ANGLE);
+                    return ApproachingBrush;
                 case WarningLevel.Normal:
-                    return new LinearGradientBrush(_startColor, Color.FromRgb(149, 255, 160), ANGLE);
+                    return NormalBrush;
                 case WarningLevel.None:
-                    return new LinearGradientBrush(_startColor, Color.FromRgb(184, 184, 184), ANGLE);
+                    return NoneBrush;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

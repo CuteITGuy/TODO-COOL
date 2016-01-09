@@ -5,6 +5,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Xml.Serialization;
@@ -48,6 +49,7 @@ namespace MainForm
             var cmd = e.OriginalSource as Hyperlink;
             if (cmd == null) return;
 
+            datMain.CommitEdit(DataGridEditingUnit.Row, true);
             var tag = cmd.Tag as string;
             switch (tag)
             {
@@ -133,7 +135,9 @@ namespace MainForm
 
 
 //TODO: Start with Windows
-//TODO: Alert Strategy: Implement
-//TODO: Style Button
-//TODO: NotifyIcon: Implement
+//TODO: Alert & Reroll Strategy: Implement
+//TODO: Style Button, CheckBox
+//TODO: Notification & NotifyIcon: Implement
 //TODO: User Account
+//TODO: WarningLevelToBrushConverter: Maintain
+//TODO: DataGrid ContextMenu

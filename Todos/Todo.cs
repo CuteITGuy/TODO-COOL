@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CB.Data;
+using CB.System;
 
 
 namespace Todos
@@ -10,6 +12,8 @@ namespace Todos
         private const int IN_PROGRESS_HOURS = 2,
                           APPROACHING_HOURS = 24;
 
+        private AlertStrategy[] _alertStrategies;
+
         private string _content = "Task 1";
         private DateTime _deadline = DateTime.Now;
         private bool _isDone;
@@ -19,7 +23,21 @@ namespace Todos
         #endregion
 
 
+        #region  Constructors & Destructor
+        public Todo()
+        {
+            RepeatSchedule = new RepeatSchedule(this);
+        }
+        #endregion
+
+
         #region  Properties & Indexers
+        public AlertStrategy[] AlertStrategies
+        {
+            get { return _alertStrategies; }
+            private set { SetProperty(ref _alertStrategies, value); }
+        }
+
         public string Content
         {
             get { return _content; }
@@ -48,11 +66,60 @@ namespace Todos
 
         public int Priority { get; set; } = 1;
 
+        public RepeatSchedule RepeatSchedule { get; private set; }
+
         public WarningLevel WarningLevel => _warningLevel;
         #endregion
 
 
+        #region Events
+        public event EventHandler<EventArgs<string>> Alert;
+        public event EventHandler<EventArgs<Todo>> Repeated;
+        #endregion
+
+
+        #region Methods
+        public void AddAlertStrategy(TimeSpan timeLeft, string message)
+        {
+            var stategyList = new List<AlertStrategy>(AlertStrategies)
+            {
+                new AlertStrategy(this)
+                {
+                    Message = message,
+                    TimeLeft = timeLeft
+                }
+            };
+            AlertStrategies = stategyList.ToArray();
+        }
+
+        public Todo CreateNextTodo()
+        {
+            var nextTodo = new Todo
+            {
+                Priority = Priority,
+                AlertStrategies = AlertStrategies,
+                Content = Content,
+                RepeatSchedule = RepeatSchedule,
+                Deadline = RepeatSchedule.GetNextDeadline(),
+                IsDone = false
+            };
+            nextTodo.RepeatSchedule = new RepeatSchedule(nextTodo);
+            return nextTodo;
+        }
+        #endregion
+
+
         #region Implementation
+        protected internal virtual void OnAlert(string message)
+        {
+            Alert?.Invoke(this, new EventArgs<string>(message));
+        }
+
+        protected internal virtual void OnRepeated(Todo nextTodo)
+        {
+            Repeated?.Invoke(this, new EventArgs<Todo>(nextTodo));
+        }
+
         private void SetWarningLevel()
         {
             var hoursToDeadline = (Deadline - DateTime.Now).TotalHours;
@@ -65,18 +132,8 @@ namespace Todos
                                                : hoursToDeadline < APPROACHING_HOURS
                                                      ? WarningLevel.Approaching : WarningLevel.Normal;
 
-            // ReSharper disable once ExplicitCallerInfoArgument
-            SetProperty(ref _warningLevel, warningLevel, nameof(WarningLevel));
+            SetField(ref _warningLevel, warningLevel, nameof(WarningLevel));
         }
         #endregion
-    }
-
-    public enum WarningLevel
-    {
-        Overdue,
-        InProgress,
-        Approaching,
-        Normal,
-        None,
     }
 }

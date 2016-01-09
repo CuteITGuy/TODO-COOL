@@ -20,7 +20,12 @@
 
         <Thickness x:Key="LargeMargin">8</Thickness>
 
-        <SolidColorBrush x:Key="GridLinesBrush">#97F8F4</SolidColorBrush>
+        <SolidColorBrush x:Key="GridLinesBrush">#7BDDC7</SolidColorBrush>
+
+        <ContextMenu x:Key="DataGridContextMenu">
+            <MenuItem Header="Delete" />
+            <MenuItem Header="Done" />
+        </ContextMenu>
 
         <Style x:Key="DataGridCellStyle" TargetType="FrameworkElement">
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -119,9 +124,16 @@
         </Style>
 
         <Style x:Key="MainDataGridHeaderStyle" TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#6F4018" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#FF723838" />
+                        <GradientStop Color="#FF110909" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="#F3EEBD" />
+            <Setter Property="Foreground" Value="#FFFFF484" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="{StaticResource LargeMargin}" />
         </Style>
@@ -130,6 +142,7 @@
             <Setter Property="AutoGenerateColumns" Value="False" />
             <Setter Property="CanUserDeleteRows" Value="False" />
             <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="ContextMenu" Value="{StaticResource DataGridContextMenu}"></Setter>
             <Setter Property="ColumnHeaderStyle" Value="{StaticResource MainDataGridHeaderStyle}" />
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource GridLinesBrush}" />
             <Setter Property="ItemsSource" Value="{Binding}" />
